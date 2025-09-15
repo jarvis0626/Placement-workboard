@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlacementPro - Student Placement Management System</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- Landing/Login Page Only -->
+    <div id="landing-page" class="landing-page">
+        <div class="landing-container">
+            <div class="landing-header">
+                <h1>PlacementPro</h1>
+                <p>Streamline your placement activities with our comprehensive management system</p>
+            </div>
+            
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" onclick="showLogin()">Sign In</button>
+                    <button class="auth-tab" onclick="showSignup()">Sign Up</button>
+                </div>
+                
+                <!-- Login Form -->
+                <div id="login-form" class="auth-form active">
+                    <h2>Welcome Back</h2>
+                    <form onsubmit="handleSignIn(event)">
+                        <div class="form-group">
+                            <label for="login-email">Email</label>
+                            <input type="email" id="login-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" id="login-password" required>
+                        </div>
+                        <button type="submit" class="btn btn--primary btn--full">Sign In</button>
+                    </form>
+                </div>
+                
+                <!-- Signup Form -->
+                <div id="signup-form" class="auth-form">
+                    <h2>Create Account</h2>
+                    <form onsubmit="handleSignUp(event)">
+                        <div class="form-group">
+                            <label for="signup-name">Full Name</label>
+                            <input type="text" id="signup-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-email">Email</label>
+                            <input type="email" id="signup-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <input type="password" id="signup-password" required minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-role">Role</label>
+                            <select id="signup-role" required>
+                                <option value="">Select Role</option>
+                                <option value="student">Student</option>
+                                <option value="staff">Staff/Admin</option>
+                                <option value="company">Company HR</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Student-specific fields -->
+                        <div id="student-fields" class="conditional-fields">
+                            <div class="form-group">
+                                <label for="signup-branch">Branch</label>
+                                <select id="signup-branch">
+                                    <option value="">Select Branch</option>
+                                    <option value="Computer Science">Computer Science</option>
+                                    <option value="Information Technology">Information Technology</option>
+                                    <option value="Electronics">Electronics</option>
+                                    <option value="Mechanical">Mechanical</option>
+                                    <option value="Civil">Civil</option>
+                                    <option value="Mathematics">Mathematics</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-year">Passing Year</label>
+                                <input type="number" id="signup-year" min="2024" max="2030">
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-cgpa">CGPA</label>
+                                <input type="number" id="signup-cgpa" min="0" max="10" step="0.1">
+                            </div>
+                        </div>
+                        
+                        <!-- Company-specific fields -->
+                        <div id="company-fields" class="conditional-fields">
+                            <div class="form-group">
+                                <label for="signup-company">Company Name</label>
+                                <input type="text" id="signup-company">
+                            </div>
+                            <div class="form-group">
+                                <label for="signup-industry">Industry</label>
+                                <input type="text" id="signup-industry">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn--primary btn--full">Create Account</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>For Students</h3>
+                    <p>Browse jobs, track applications, and manage your profile</p>
+                </div>
+                <div class="feature-card">
+                    <h3>For Staff</h3>
+                    <p>Manage placements, view analytics, and coordinate activities</p>
+                </div>
+                <div class="feature-card">
+                    <h3>For Companies</h3>
+                    <p>Post jobs, review applications, and schedule interviews</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p>Please wait...</p>
+    </div>
+
+
+    <!-- Supabase Configuration -->
+    <script type="module" src="assets/js/supabase-config.js"></script>
+    <script src="assets/js/common.js"></script>
+
+</body>
+</html>

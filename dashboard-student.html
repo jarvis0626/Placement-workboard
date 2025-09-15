@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - PlacementPro</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="main-nav" class="navbar">
+        <!-- ...existing code from nav in index.html... -->
+    </nav>
+    <div id="app-container" class="app-container">
+        <div id="student-dashboard" class="dashboard">
+            <!-- ...student dashboard content from index.html... -->
+        </div>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h2>PlacementPro</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="dashboard-student.html" class="nav-link active">Dashboard</a>
+                <a href="jobs.html" class="nav-link">Jobs</a>
+                <a href="profile.html" class="nav-link">Profile</a>
+                <a href="interviews.html" class="nav-link">Interviews</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+            </div>
+
+            <!-- Profile Completion Alert -->
+            <div id="profile-alert" class="alert alert--warning hidden">
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+            </div>
+
+            <!-- Main Dashboard Grid -->
+            <div class="dashboard-grid">
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase Configuration -->
+    <script type="module" src="assets/js/supabase-config.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/student.js"></script>
+
+    <style>
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { display: flex; align-items: center; padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-icon { font-size: 2rem; margin-right: 1rem; }
+        .stat-content h3 { margin: 0; font-size: 2rem; color: #2563eb; }
+        .stat-content p { margin: 0; color: #64748b; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; }
+        .dashboard-card { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .card-header { display: flex; justify-content: between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #e5e7eb; }
+        .card-content { padding: 1.5rem; }
+        .application-item, .job-item, .interview-item, .notification-item { padding: 1rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+        .application-item:last-child, .job-item:last-child, .interview-item:last-child, .notification-item:last-child { border-bottom: none; }
+        .application-status, .interview-status { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-shortlisted { background: #dbeafe; color: #1e40af; }
+        .status-interview_scheduled { background: #e0e7ff; color: #3730a3; }
+        .status-selected { background: #d1fae5; color: #065f46; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+        .status-scheduled { background: #e0e7ff; color: #3730a3; }
+        .empty-state { text-align: center; color: #6b7280; padding: 2rem; }
+        .loading-placeholder { text-align: center; color: #6b7280; padding: 1rem; }
+        .error { color: #dc2626; text-align: center; padding: 1rem; }
+        .alert { padding: 1rem; border-radius: 8px; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .alert--warning { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; }
+        .notification-item.unread { background: #f0f9ff; }
+        .notification-bell { position: relative; cursor: pointer; }
+        .notification-count { position: absolute; top: -5px; right: -5px; background: #dc2626; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; }
+        .job-ctc { font-weight: 600; color: #059669; }
+        .interview-details { display: flex; gap: 1rem; margin-top: 0.5rem; }
+        .interview-details span { font-size: 0.8rem; color: #6b7280; }
+    </style>
