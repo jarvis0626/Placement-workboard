@@ -1,3 +1,23 @@
+// Magic link / OTP sign-in handler (if used)
+window.handleOtpSignIn = async (e) => {
+	e.preventDefault()
+	const email = document.getElementById('otp-email').value.trim().toLowerCase()
+	const redirectTo = 'https://jarvis0626.github.io/Placement-workboard/'
+	showLoading(true)
+	try {
+		const { data: otpData, error: otpErr } = await supabase.auth.signInWithOtp({
+			email,
+			options: { emailRedirectTo: redirectTo }
+		})
+		if (otpErr) throw otpErr
+		alert('Check your email for the magic link to sign in.')
+		showLogin()
+	} catch (error) {
+		alert('OTP sign-in failed: ' + (error.message || error.description || error))
+	} finally {
+		showLoading(false)
+	}
+}
 // Common JS for PlacementPro (navigation, notifications, etc.)
 
 // --- Shared Application Data and State ---
@@ -127,10 +147,15 @@ window.handleSignUp = async (e) => {
 	const email = document.getElementById('signup-email').value.trim().toLowerCase()
 	const password = document.getElementById('signup-password').value
 	const role = document.getElementById('signup-role').value
+	const redirectTo = 'https://jarvis0626.github.io/Placement-workboard/'
 	showLoading(true)
 	try {
-		// 1) Create auth user
-		const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password })
+		// 1) Create auth user with redirect
+		const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+			email,
+			password,
+			options: { emailRedirectTo: redirectTo }
+		})
 		if (signUpError) throw signUpError
 
 		// 2) Ensure session (password sign-up often returns session; if null, ask to verify then sign in)
