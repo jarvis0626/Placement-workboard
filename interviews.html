@@ -7,13 +7,318 @@
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <nav id="main-nav" class="navbar">
-        <!-- ...existing code from nav in index.html... -->
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div class="nav-left" style="display: flex; align-items: center; gap: 1.5rem;">
+                <h2 style="margin: 0;">PlacementPro</h2>
+                <a href="dashboard-student.html" class="nav-link">Dashboard</a>
+            </div>
+            <div class="nav-right" style="display: flex; align-items: center; gap: 1.5rem;">
+                <a href="jobs.html" class="nav-link">Jobs</a>
+                <a href="profile.html" class="nav-link">Profile</a>
+                <a href="interviews.html" class="nav-link active">Interviews</a>
+            </div>
+        </div>
     </nav>
-    <div id="interviews-page" class="page">
-        <!-- ...interviews page content from index.html... -->
+
+    <div class="app-container">
+        <div class="dashboard-container">
+            <!-- Page Header -->
+            <div class="dashboard-profile-card dashboard-card">
+                <div class="card-header">
+                    <div>
+                        <h2>My Interviews</h2>
+                        <span style="color:#64748b;">Scheduled and completed interviews</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Interviews List -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>All Interviews</h3>
+                    <div id="interviews-count" class="count-badge">0 interviews</div>
+                </div>
+                <div class="card-content table-container">
+                    <table class="interviews-table">
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Date & Time</th>
+                                <th>Mode</th>
+                                <th>Interviewer</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="interviews-tbody">
+                            <tr class="empty-state">
+                                <td colspan="6">Loading interviews...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden"></div>
+
+    <script type="module" src="assets/js/supabase-config.js"></script>
     <script src="assets/js/common.js"></script>
-    <script src="assets/js/company.js"></script>
+    <script type="module" src="assets/js/interviews.js"></script>
+
+    <style>
+        /* Use same styling as dashboard */
+        body {
+            margin: 0;
+            padding: 0;
+            background: #181a1b;
+            color: #fff;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            background-color: #232946;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .nav-link {
+            color: #e5e7eb;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #38bdf8;
+        }
+
+        .app-container {
+            margin-top: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100vw;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 0 16px;
+        }
+
+        .dashboard-profile-card {
+            width: 100%;
+            background-color: #1e293b;
+            color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-profile-card .card-header {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border-bottom: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-card {
+            background: #2a2a2a;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #404040;
+        }
+
+        .card-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem 1rem 1.5rem;
+            border-bottom: 1px solid #374151;
+            background: #232946;
+            width: 100%;
+        }
+
+        .card-header h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.7rem;
+            color: #38bdf8;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .card-content {
+            padding: 0;
+            background: #232946;
+            flex: 1;
+            width: 100%;
+        }
+
+        .filter-select, .search-input {
+            padding: 0.5rem;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            background: #1f2937;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .search-input {
+            min-width: 250px;
+        }
+
+        .count-badge {
+            background: #38bdf8;
+            color: #fff;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .interviews-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .interviews-table th {
+            background: #1a1a1a;
+            color: #38bdf8;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid #404040;
+        }
+
+        .interviews-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #374151;
+            color: #fff;
+        }
+
+        .interviews-table tbody tr:hover {
+            background: #1f2937;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #6b7280;
+            padding: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .badge--scheduled { background: #3730a3; color: #e0e7ff; }
+        .badge--completed { background: #14532d; color: #d1fae5; }
+        .badge--cancelled { background: #7f1d1d; color: #fee2e2; }
+        .badge--rescheduled { background: #4338ca; color: #e0e7ff; }
+
+        .btn {
+            background: #374151;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn--secondary {
+            background: #6b7280;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            color: #fff;
+            font-weight: 600;
+            z-index: 300;
+            transition: opacity 0.3s ease;
+        }
+
+        .toast.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .toast.success {
+            background: #10b981;
+        }
+
+        .toast.danger {
+            background: #ef4444;
+        }
+
+        .toast.info {
+            background: #38bdf8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 0 12px;
+            }
+
+            .interviews-table {
+                font-size: 0.8rem;
+            }
+
+            .interviews-table th,
+            .interviews-table td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
 </body>
 </html>

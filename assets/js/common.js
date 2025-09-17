@@ -84,10 +84,6 @@ const applicationData = {
 	}
 };
 
-// Global State
-
-// --- Auth and Landing Page Logic (migrated from index.html) ---
-// Auth form switching
 window.showLogin = () => {
 	document.getElementById('login-form').classList.add('active')
 	document.getElementById('signup-form').classList.remove('active')
@@ -150,6 +146,16 @@ window.handleSignUp = async (e) => {
 	const redirectTo = 'https://jarvis0626.github.io/Placement-workboard/'
 	showLoading(true)
 	try {
+		// Check if email already exists in user_profiles
+		const { data: existingProfile } = await supabase
+			.from('user_profiles')
+			.select('id')
+			.eq('email', email)
+			.single()
+		if (existingProfile) {
+			throw new Error('An account with this email already exists. Please sign in or use a different email.')
+		}
+
 		// 1) Create auth user with redirect
 		const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
 			email,
@@ -158,15 +164,13 @@ window.handleSignUp = async (e) => {
 		})
 		if (signUpError) throw signUpError
 
-		// 2) Ensure session (password sign-up often returns session; if null, ask to verify then sign in)
 		let { data: { user } } = await supabase.auth.getUser()
 		if (!user) {
-			alert('Verify email, then sign in to complete setup.')
+			alert('Proceed to login')
 			showLogin()
 			return
 		}
 
-		// 3) Insert user profile with RLS-compliant check
 		const { error: profileErr } = await supabase.from('user_profiles').insert({
 			auth_user_id: user.id,  // must match auth.uid() in policy
 			email,
@@ -175,7 +179,6 @@ window.handleSignUp = async (e) => {
 		})
 		if (profileErr) throw profileErr
 
-		// 4) Role-specific records
 		if (role === 'student') {
 			const branch = document.getElementById('signup-branch').value.trim()
 			const passing_year = parseInt(document.getElementById('signup-year').value)
@@ -195,30 +198,52 @@ window.handleSignUp = async (e) => {
 			if (stuErr) throw stuErr
 		}
 
-		if (role === 'company') {
+			if (role === 'company') {
 			const companyName = document.getElementById('signup-company').value.trim()
 			const industry = document.getElementById('signup-industry').value.trim()
 			if (!companyName) throw new Error('Please fill all company fields')
 
-			// upsert company
-			let { data: company } = await supabase.from('companies').select('id').eq('name', companyName).single()
+			// 1) Ensure company exists (upsert pattern)
+			let { data: company, error: cSelErr } = await supabase
+				.from('companies')
+				.select('id, status')
+				.eq('name', companyName)
+				.single()
+
+			if (cSelErr && cSelErr.code !== 'PGRST116') throw cSelErr // ignore "no rows" 406
+
 			if (!company) {
-				const { data: newCompany, error: ncErr } = await supabase
-					.from('companies').insert({ name: companyName, industry, status: 'pending' })
-					.select('id').single()
-				if (ncErr) throw ncErr
+				const { data: newCompany, error: cInsErr } = await supabase
+				.from('companies')
+				.insert({ name: companyName, industry, status: 'approved' }) // or 'pending'
+				.select('id')
+				.single()
+				if (cInsErr) throw cInsErr
 				company = newCompany
 			}
-			const { data: profile } = await supabase.from('user_profiles').select('id').eq('auth_user_id', user.id).single()
-			const { error: cuErr } = await supabase.from('company_users').insert({
+
+			// 2) Get this user's profile id using auth_user_id (aligns with RLS)
+			const { data: profile, error: profErr } = await supabase
+				.from('user_profiles')
+				.select('id')
+				.eq('auth_user_id', user.id)
+				.single()
+			if (profErr || !profile) throw profErr || new Error('Profile missing after signup')
+
+			// 3) Link profile to company in company_users (idempotent with unique (user_id, company_id))
+			const { error: linkErr } = await supabase
+				.from('company_users')
+				.insert({
 				user_id: profile.id,
 				company_id: company.id,
 				title: 'HR Manager'
-			})
-			if (cuErr) throw cuErr
-		}
+				})
+			// If UNIQUE violation (already linked), ignore; else rethrow
+			if (linkErr && linkErr.code !== '23505') throw linkErr
+			}
 
-		alert('Account created! If verification is required, check email, then sign in.')
+
+		alert('Account created! Please Proceed to login')
 		showLogin()
 	} catch (error) {
 		alert('Sign up failed: ' + (error.message || error.description || error))

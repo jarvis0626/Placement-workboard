@@ -1,23 +1,679 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Dashboard - PlacementPro</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <script type="module" src="assets/js/supabase-config.js"></script>
+    <script type="module" src="assets/js/common.js"></script>
+    <script type="module" src="assets/js/company.js"></script>
+
     <!-- Navigation -->
-    <nav id="main-nav" class="navbar">
-        <!-- ...existing code from nav in index.html... -->
+    <nav class="navbar">
+        <div class="nav-container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div class="nav-left" style="display: flex; align-items: center; gap: 1.5rem;">
+                <h2 style="margin: 0;">PlacementPro</h2>
+            </div>
+        </div>
     </nav>
+
     <div id="app-container" class="app-container">
-        <div id="company-dashboard" class="dashboard">
-            <!-- ...company dashboard content from index.html... -->
+        <div class="dashboard">
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="dashboard-container">
+                    <!-- Company Profile -->
+                    <div id="company-profile" class="dashboard-profile-card dashboard-card">
+                        <div class="card-header">
+                            <div>
+                                <h2 id="company-name-display">Company Profile</h2>
+                                <span id="company-industry-display" style="color:#64748b;"></span>
+                            </div>
+                            <button id="edit-company-btn" class="btn btn--primary">Edit Profile</button>
+                        </div>
+                        <div class="card-content">
+                            <form id="company-form" class="form-grid" autocomplete="off">
+                                <div class="form-group">
+                                    <label>Company Name</label>
+                                    <input id="company-name" type="text" placeholder="Company name" disabled />
+                                </div>
+                                <div class="form-group">
+                                    <label>Industry</label>
+                                    <input id="company-industry" type="text" placeholder="Industry" disabled />
+                                </div>
+                                <div class="form-group">
+                                    <label>Website</label>
+                                    <input id="company-website" type="url" placeholder="https://..." disabled />
+                                </div>
+                                <div class="form-actions">
+                                    <button id="save-company-btn" class="btn btn--primary" type="submit" disabled>Save Changes</button>
+                                    <button id="cancel-company-btn" class="btn btn--secondary" type="button" disabled>Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Create Job Card -->
+                    <div class="dashboard-card" style="max-width: 900px; width: 100%; margin-top: 1rem;">
+                    <div class="card-header">
+                        <h3>Create a Job</h3>
+                    </div>
+                    <div class="card-content">
+                        <form id="job-form" class="form-grid" autocomplete="off">
+                        <div class="form-group">
+                            <label for="job-title">Job Title</label>
+                            <input id="job-title" type="text" placeholder="Software Engineer" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="job-type">Type</label>
+                            <select id="job-type">
+                            <option value="">Select type</option>
+                            <option value="Full-time">Full-time</option>
+                            <option value="Internship">Internship</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="job-location">Location</label>
+                            <input id="job-location" type="text" placeholder="Remote / Bangalore" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="job-ctc">CTC</label>
+                            <input id="job-ctc" type="text" placeholder="₹12 LPA / ₹30k per month" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="job-deadline">Application Deadline</label>
+                            <input id="job-deadline" type="date" />
+                        </div>
+
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label for="job-description">Description</label>
+                            <textarea id="job-description" rows="4" placeholder="Role responsibilities, stack, etc."></textarea>
+                        </div>
+
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label for="job-requirements">Requirements (comma separated)</label>
+                            <input id="job-requirements" type="text" placeholder="JavaScript, SQL, Data Structures" />
+                        </div>
+
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label for="job-branches">Eligible Branches (comma separated)</label>
+                            <input id="job-branches" type="text" placeholder="CSE, IT, ECE" />
+                        </div>
+
+                        <div class="form-actions" style="grid-column: 1 / -1;">
+                            <button class="btn btn--primary" type="submit">Create Job</button>
+                        </div>
+                        </form>
+                    </div>
+                    </div>
+
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-icon">👥</span>
+                            <div class="stat-content">
+                                <h3 id="interested-students">0</h3>
+                                <p>Interested Students</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">✅</span>
+                            <div class="stat-content">
+                                <h3 id="shortlisted-students">0</h3>
+                                <p>Shortlisted</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">🎯</span>
+                            <div class="stat-content">
+                                <h3 id="selected-students">0</h3>
+                                <p>Selected</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interested Students -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>Interested Students</h3>
+                            <div class="filters-container">
+                                <select id="job-filter" class="filter-select">
+                                    <option value="">All Jobs</option>
+                                </select>
+                                <input id="search-students" type="search" placeholder="Search students..." class="search-input" />
+                            </div>
+                        </div>
+                        <div class="card-content table-container">
+                            <table class="students-table" id="students-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Branch</th>
+                                        <th>Year</th>
+                                        <th>CGPA</th>
+                                        <th>Job</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="empty-state">
+                                        <td colspan="7">No interested students found.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <script src="assets/js/common.js"></script>
-    <script src="assets/js/company.js"></script>
+
+    <!-- Student Profile Drawer -->
+    <div id="student-drawer" class="drawer hidden">
+        <div class="drawer-header">
+            <h3 id="drawer-title">Student Profile</h3>
+            <button id="drawer-close" class="close-btn">✕</button>
+        </div>
+        <div class="drawer-body">
+            <div class="student-profile-grid">
+                <div class="profile-item">
+                    <label>Full Name</label>
+                    <div id="sp-fullname">—</div>
+                </div>
+                <div class="profile-item">
+                    <label>Email</label>
+                    <div id="sp-email">—</div>
+                </div>
+                <div class="profile-item">
+                    <label>Branch</label>
+                    <div id="sp-branch">—</div>
+                </div>
+                <div class="profile-item">
+                    <label>Passing Year</label>
+                    <div id="sp-year">—</div>
+                </div>
+                <div class="profile-item">
+                    <label>CGPA</label>
+                    <div id="sp-cgpa">—</div>
+                </div>
+                <div class="profile-item">
+                    <label>Skills</label>
+                    <div id="sp-skills">—</div>
+                </div>
+                <div class="profile-item">
+                    <label>Resume</label>
+                    <div><a id="sp-resume" href="#" target="_blank" class="resume-link">View Resume</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="drawer-footer">
+            <button id="approve-btn" class="btn btn--success">Approve for Interview</button>
+            <button id="reject-btn" class="btn btn--danger">Reject</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden"></div>
+
+   
+
+    <style>
+        /* Modern Dashboard Layout - Same as Student Dashboard */
+        body {
+            margin: 0;
+            padding: 0;
+            background: #181a1b;
+            color: #fff;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            background-color: #232946;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .app-container {
+            margin-top: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100vw;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 0 16px;
+        }
+
+        .dashboard-profile-card {
+            width: 100%;
+            background-color: #1e293b; /* Change this to your desired color */
+            color: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-profile-card .card-header {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border-bottom: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-profile-card .btn--primary {
+            margin-top: 1.2rem;
+            background: #38bdf8;
+            color: #fff;
+            font-size: 1.1rem;
+            padding: 0.75rem 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(56,189,248,0.12);
+            display: block;
+        }
+
+        .dashboard-profile-card .card-content {
+            margin-top: 1rem;
+            color: white;
+            font-size: 1rem;
+            background: transparent;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .form-group input, .form-group select {
+            padding: 0.75rem;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            background: #1f2937;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .form-group input:disabled, .form-group select:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .form-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .stats-grid {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            flex: 1 1 200px;
+            min-width: 200px;
+            background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+            color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-right: 1.2rem;
+            opacity: 0.85;
+        }
+
+        .stat-content h3 {
+            margin: 0;
+            font-size: 2.2rem;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .stat-content p {
+            margin: 0;
+            color: #e0e7ff;
+            font-size: 1rem;
+        }
+
+        .dashboard-card {
+            background: #2a2a2a; /* Change this to your desired color */
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #404040; /* Slightly lighter border */
+        }
+
+        .card-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem 1rem 1.5rem;
+            border-bottom: 1px solid #374151;
+            background: #232946;
+            width: 100%;
+        }
+
+        .card-header h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.7rem;
+            color: #38bdf8;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .filters-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .filter-select, .search-input {
+            padding: 0.5rem;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            background: #1f2937;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .search-input {
+            min-width: 200px;
+        }
+
+        .card-content {
+            padding: 0;
+            background: #232946;
+            flex: 1;
+            width: 100%;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .students-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .students-table th {
+            background: #1a1a1a; /* Darker for contrast */
+            color: #38bdf8;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid #404040;
+        }
+
+        .students-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #374151;
+            color: #fff;
+        }
+
+        .students-table tbody tr:hover {
+            background: #1f2937;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #6b7280;
+            padding: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            background: #374151;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn--primary {
+            background: #38bdf8;
+        }
+
+        .btn--primary:hover {
+            background: #2563eb;
+        }
+
+        .btn--secondary {
+            background: #6b7280;
+        }
+
+        .btn--success {
+            background: #10b981;
+        }
+
+        .btn--danger {
+            background: #ef4444;
+        }
+
+        .btn.small {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        /* Student Profile Drawer */
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 400px;
+            height: 100vh;
+            background: #232946;
+            box-shadow: -4px 0 8px rgba(0,0,0,0.2);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .drawer:not(.hidden) {
+            transform: translateX(0);
+        }
+
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #374151;
+            background: #1f2937;
+        }
+
+        .drawer-header h3 {
+            margin: 0;
+            color: #38bdf8;
+            font-size: 1.25rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drawer-body {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .student-profile-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .profile-item label {
+            display: block;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .profile-item div {
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .resume-link {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+
+        .resume-link:hover {
+            text-decoration: underline;
+        }
+
+        .drawer-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #374151;
+            display: flex;
+            gap: 1rem;
+            background: #1f2937;
+        }
+
+        .drawer-footer .btn {
+            flex: 1;
+            padding: 0.75rem;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            color: #fff;
+            font-weight: 600;
+            z-index: 300;
+            transition: opacity 0.3s ease;
+        }
+
+        .toast.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .toast.success {
+            background: #10b981;
+        }
+
+        .toast.danger {
+            background: #ef4444;
+        }
+
+        .toast.info {
+            background: #38bdf8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 0 12px;
+            }
+
+            .stats-grid {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .drawer {
+                width: 100vw;
+            }
+
+            .filters-container {
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+            }
+
+            .filter-select, .search-input {
+                width: 100%;
+            }
+        }
+    </style>
 </body>
 </html>

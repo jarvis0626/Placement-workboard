@@ -1,97 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jobs - PlacementPro</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jobs - PlacementPro</title>
+  <link rel="stylesheet" href="assets/css/style.css"/>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-            </div>
-            <div class="nav-menu">
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="jobs-container">
-            <div class="page-header">
-            </div>
-
-            <!-- Filters -->
-            <div class="filters-section">
-            </div>
-
-        </div>
+  <!-- Top Navigation (consistent with dashboard) -->
+  <nav class="navbar">
+    <div class="nav-container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+      <div class="nav-left" style="display:flex; align-items:center; gap:1.5rem;">
+        <h2 style="margin:0;">PlacementPro</h2>
+        <a href="dashboard-student.html" class="nav-link">Dashboard</a>
+      </div>
+      <div class="nav-right" style="display:flex; align-items:center; gap:1.5rem;">
+        <a href="jobs.html" class="nav-link active">Jobs</a>
+        <a href="profile.html" class="nav-link">Profile</a>
+        <a href="interviews.html" class="nav-link">Interviews</a>
+      </div>
     </div>
+  </nav>
 
-    <!-- Job Details Modal -->
-    <div id="job-modal" class="modal hidden">
-        <div class="modal-content">
+  <div class="app-container">
+    <div class="dashboard">
+      <div class="main-content">
+        <div class="dashboard-container">
+
+          <!-- Page Header -->
+          <div class="dashboard-card" style="max-width:1200px; width:100%;">
+            <div class="card-header">
+              <h3>Available Jobs</h3>
+              <div class="filters-container" style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                <input id="search-jobs" type="search" placeholder="Search by title, company, skill..." class="search-input"/>
+                <select id="filter-company" class="filter-select">
+                  <option value="">All companies</option>
+                </select>
+                <select id="filter-branch" class="filter-select">
+                  <option value="">All branches</option>
+                </select>
+                <select id="filter-type" class="filter-select">
+                  <option value="">All types</option>
+                  <option value="Full-time">Full-time</option>
+                  <option value="Internship">Internship</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Jobs List -->
+            <div id="jobs-list" class="card-content" style="width:100%; display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1rem;">
+              <!-- Populated by jobs.js -->
+              <div class="job-item empty-state" id="jobs-empty">No jobs found.</div>
+            </div>
+          </div>
+
+          <!-- Toast -->
+          <div id="toast" class="toast hidden"></div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Supabase Configuration -->
-    <script type="module" src="assets/js/supabase-config.js"></script>
-    <script src="assets/js/common.js"></script>
-    <script src="assets/js/student.js"></script>
-    <script src="assets/js/jobs.js"></script>
+  <!-- Scripts (order matters: Supabase, common utilities, then page logic) -->
+  <script type="module" src="assets/js/supabase-config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/jobs.js"></script>
 
-    <style>
-        .filters-section { background: white; padding: 1.5rem; margin-bottom: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .filters-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
-        .filter-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151; }
-        .filter-group input, .filter-group select { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; }
-        
-        .jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
-        .job-card { background: white; border-radius: 8px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
-        .job-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
-        
-        .job-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
-        .job-header h3 { margin: 0; color: #1f2937; }
-        .company-badge { background: #e0e7ff; color: #3730a3; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
-        
-        .job-meta { display: flex; justify-content: space-between; margin-bottom: 1rem; color: #6b7280; font-size: 0.9rem; }
-        .job-description { margin-bottom: 1rem; color: #4b5563; line-height: 1.6; }
-        
-        .job-requirements { margin-bottom: 1rem; }
-        .skill-tag { display: inline-block; background: #f3f4f6; color: #374151; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; margin-right: 0.5rem; margin-bottom: 0.25rem; }
-        .more-skills { color: #6b7280; font-size: 0.8rem; }
-        
-        .job-footer { display: flex; justify-content: space-between; align-items: center; }
-        .job-deadline { font-size: 0.8rem; color: #6b7280; }
-        .applied-badge { background: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
-        .eligible-badge { background: #dbeafe; color: #1e40af; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
-        
-        .load-more-container { text-align: center; margin-top: 2rem; }
-        
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal.hidden { display: none; }
-        .modal-content { background: white; border-radius: 8px; max-width: 800px; width: 90%; max-height: 90%; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #e5e7eb; }
-        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #6b7280; }
-        .modal-body { padding: 1.5rem; }
-        .modal-footer { display: flex; justify-content: flex-end; gap: 1rem; padding: 1.5rem; border-top: 1px solid #e5e7eb; }
-        
-        .company-info { margin-bottom: 1.5rem; }
-        .job-info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-        .info-item { display: flex; flex-direction: column; }
-        .info-item strong { color: #374151; margin-bottom: 0.25rem; }
-        
-        .job-details-content h4 { color: #1f2937; margin-top: 1.5rem; margin-bottom: 0.75rem; }
-        .branch-tag { display: inline-block; background: #f0fdf4; color: #166534; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; margin-right: 0.5rem; margin-bottom: 0.25rem; }
-        
-        .status-eligible { color: #065f46; background: #d1fae5; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
-        .status-applied { color: #1e40af; background: #dbeafe; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
-        .status-not-eligible { color: #991b1b; background: #fee2e2; padding: 1rem; border-radius: 8px; margin-top: 1rem; }
-        
-        .empty-state, .error { text-align: center; color: #6b7280; padding: 3rem; grid-column: 1 / -1; }
-        .loading-placeholder { text-align: center; color: #6b7280; padding: 2rem; }
-    </style>
+  <style>
+    :root{
+      --color-primary:#38bdf8;
+      --color-bg-1:#232946;
+      --color-surface:#232946;
+      --color-card-border-inner:#374151;
+      --color-btn-primary-text:#fff;
+    }
+    body{
+      margin:0; padding:0; background:#181a1b; color:#fff;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Noto Color Emoji",sans-serif;
+    }
+    .navbar{
+      position:fixed; top:0; left:0; width:100vw;
+      background-color:#232946; color:#fff;
+      display:flex; justify-content:space-between; padding:1rem 2rem;
+      box-shadow:0 4px 8px rgba(0,0,0,0.1); z-index:100;
+    }
+    .app-container{ margin-top:80px; display:flex; flex-direction:column; align-items:center; width:100vw; }
+    .dashboard-container{ max-width:1200px; margin:0 auto; display:flex; flex-direction:column; align-items:center; gap:20px; padding:0 16px; }
+
+    .dashboard-card{
+      background:var(--color-surface);
+      border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,0.10);
+      width:100%; overflow:hidden; display:flex; flex-direction:column; align-items:center;
+    }
+    .card-header{
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      padding:2rem 1.5rem 1rem 1.5rem; border-bottom:1px solid var(--color-card-border-inner);
+      background:var(--color-bg-1); width:100%;
+    }
+    .card-header h3{ margin:0 0 0.75rem 0; font-size:1.7rem; color:var(--color-primary); font-weight:700; text-align:center; }
+    .card-content{ padding:1.5rem; width:100%; }
+    .filter-select,.search-input{
+      padding:0.5rem; border:1px solid #374151; border-radius:6px; background:#1f2937; color:#fff; font-size:0.95rem;
+    }
+
+    /* Job card */
+    .job-card{
+      background:#1e293b; border:1px solid #374151; border-radius:10px; padding:1rem 1.25rem;
+      display:flex; flex-direction:column; gap:0.5rem;
+    }
+    .job-title{ font-size:1.1rem; font-weight:700; color:#e2e8f0; margin:0; }
+    .job-meta{ display:flex; gap:0.75rem; flex-wrap:wrap; font-size:0.9rem; color:#cbd5e1; }
+    .job-desc{ color:#cbd5e1; font-size:0.95rem; }
+    .job-footer{ display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem; }
+    .chip{ background:#0f172a; border:1px solid #334155; border-radius:999px; padding:0.15rem 0.6rem; font-size:0.75rem; color:#cbd5e1; }
+    .btn{ background:#374151; color:#fff; border:none; padding:0.5rem 1rem; border-radius:6px; font-weight:600; cursor:pointer; transition:background 0.2s; font-size:0.9rem; }
+    .btn:hover{ opacity:0.9; }
+    .btn--primary{ background:#38bdf8; }
+    .btn--primary:hover{ background:#2563eb; }
+    .empty-state{ text-align:center; color:#6b7280; padding:2rem; font-size:1.1rem; }
+
+    .toast{ position:fixed; top:100px; right:20px; padding:1rem 1.5rem; border-radius:6px; color:#fff; font-weight:600; z-index:300; transition:opacity 0.3s ease; }
+    .toast.hidden{ opacity:0; pointer-events:none; }
+    .toast.info{ background:#38bdf8; } .toast.success{ background:#10b981; } .toast.danger{ background:#ef4444; }
+
+    @media (max-width:768px){
+      .filters-container{ width:100%; flex-direction:column; align-items:stretch; }
+      #jobs-list{ grid-template-columns:1fr; }
+    }
+  </style>
 </body>
 </html>

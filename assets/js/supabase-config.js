@@ -30,6 +30,7 @@ window.authUtils = {
     
     return { user, profile }
   },
+  
 
   // Require specific role for page access
   async requireRole(allowedRoles) {

@@ -14,76 +14,413 @@
     </nav>
     <div id="app-container" class="app-container">
         <div id="student-dashboard" class="dashboard">
-            <!-- ...student dashboard content from index.html... -->
-        </div>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <h2>PlacementPro</h2>
-            </div>
-            <div class="nav-menu">
-                <a href="dashboard-student.html" class="nav-link active">Dashboard</a>
-                <a href="jobs.html" class="nav-link">Jobs</a>
-                <a href="profile.html" class="nav-link">Profile</a>
-                <a href="interviews.html" class="nav-link">Interviews</a>
-            </div>
-        </div>
-    </nav>
+            <!-- Navigation -->
+            <nav class="navbar">
+                <div class="nav-container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div class="nav-left" style="display: flex; align-items: center; gap: 1.5rem;">
+                        <h2 style="margin: 0;">PlacementPro</h2>
+                        <a href="dashboard-student.html" class="nav-link active">Dashboard</a>
+                    </div>
+                    <div class="nav-right" style="display: flex; align-items: center; gap: 1.5rem;">
+                        <a href="jobs.html" class="nav-link">Jobs</a>
+                        <a href="profile.html" class="nav-link">Profile</a>
+                        <a href="interviews.html" class="nav-link">Interviews</a>
+                    </div>
+                </div>
+            </nav>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="dashboard-container">
-            <div class="dashboard-header">
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="dashboard-container">
+                    <div class="dashboard-profile-card dashboard-card">
+                        <div class="card-header">
+                            <div>
+                                <h2 id="student-name"></h2>
+                                <span id="student-branch" style="color:#64748b;"></span>
+                            </div>
+                            <button onclick="window.location.href='profile.html'" class="btn btn--primary">Edit Profile</button>
+                        </div>
+                        <div class="card-content">
+                            <div><strong>Email:</strong> <span id="student-email"></span></div>
+                            <div><strong>Passing Year:</strong> <span id="student-year"></span></div>
+                            <div><strong>CGPA:</strong> <span id="student-cgpa"></span></div>
+                            <div style="margin-top:1rem;"><strong>Profile Completion:</strong> <span id="profile-complete"></span></div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Completion Alert -->
+                    <div id="profile-alert" class="alert alert--warning hidden">
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <!-- Dashboard Stats -->
+                        <div class="stat-card">
+                            <span class="stat-icon">🎯</span>
+                            <div class="stat-content">
+                                <h3 id="applied-count">0</h3>
+                                <p>Jobs Applied</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">✅</span>
+                            <div class="stat-content">
+                                <h3 id="shortlisted-count">0</h3>
+                                <p>Shortlisted</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">📅</span>
+                            <div class="stat-content">
+                                <h3 id="interviews-count">0</h3>
+                                <p>Interviews</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Dashboard Grid -->
+                    <div class="dashboard-grid">
+                        <!-- Recent Jobs -->
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3>Recent Job Postings</h3>
+                                <a href="jobs.html" class="btn btn--link">View All</a>
+                            </div>
+                            <div class="card-content" id="recent-jobs-list">
+                                <div class="job-item empty-state">No recent jobs found.</div>
+                            </div>
+                        </div>
+
+                        <!-- Application Status -->
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3>My Applications</h3>
+                                <a href="jobs.html" class="btn btn--link">Apply More</a>
+                            </div>
+                            <div class="card-content" id="applications-list">
+                                <div class="application-item empty-state">No applications yet.</div>
+                            </div>
+                        </div>
+
+                        <!-- Announcements -->
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3>Announcements</h3>
+                            </div>
+                            <div class="card-content" id="announcements-list">
+                                <div class="notification-item empty-state">No announcements at this time.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Profile Completion Alert -->
-            <div id="profile-alert" class="alert alert--warning hidden">
-            </div>
+            <!-- Supabase Configuration -->w
+            <script type="module" src="assets/js/supabase-config.js"></script>
+            <script src="assets/js/common.js"></script>
+            <script type="module" src="assets/js/student.js"></script>
 
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-            </div>
+            <style>
+                /* Modern Dashboard Layout */
+                body {
+                    margin: 0;
+                    padding: 0;
+                    background: #181a1b;
+                    color: #fff;
+                }
 
-            <!-- Main Dashboard Grid -->
-            <div class="dashboard-grid">
-            </div>
+                .navbar {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    background-color: #232946;
+                    color: #fff;
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 1rem 2rem;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    z-index: 100;
+                }
+
+                .app-container {
+                    margin-top: 80px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    width: 100vw;
+                }
+
+                .dashboard-container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 20px;
+                }
+
+                .dashboard-profile-card {
+                    width: 100%;
+                    background-color: #232946;
+                    color: #fff;
+                    padding: 2rem;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+                    margin-bottom: 2rem;
+                }
+                .dashboard-profile-card .card-header {
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 0;
+                    border-bottom: none;
+                }
+                .dashboard-profile-card .btn--primary {
+                    margin-top: 1.2rem;
+                    background: var(--color-primary);
+                    color: var(--color-btn-primary-text);
+                    font-size: 1.1rem;
+                    padding: 0.75rem 2.5rem;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 8px rgba(24,224,251,0.12);
+                    display: block;
+                }
+                .dashboard-profile-card .card-content {
+                    margin-top: 1rem;
+                    color: white;
+                    font-size: 1rem;
+                }
+                .stats-grid {
+                    display: flex;
+                    gap: 2rem;
+                    margin-bottom: 2rem;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                }
+                .stat-card {
+                    flex: 1 1 200px;
+                    min-width: 200px;
+                    background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+                    color: #fff;
+                    border-radius: 10px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+                    padding: 1.5rem;
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 0;
+                }
+                .stat-icon {
+                    font-size: 2.5rem;
+                    margin-right: 1.2rem;
+                    opacity: 0.85;
+                }
+                .stat-content h3 {
+                    margin: 0;
+                    font-size: 2.2rem;
+                    color: #fff;
+                    font-weight: 700;
+                }
+                .stat-content p {
+                    margin: 0;
+                    color: #e0e7ff;
+                    font-size: 1rem;
+                }
+                .dashboard-grid {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 2.5rem;
+                    margin-top: 1.5rem;
+                    align-items: center;
+                }
+                .dashboard-card {
+                    background: var(--color-surface);
+                    border-radius: 16px;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+                    width: 100%;
+                    max-width: 600px;
+                    min-height: 220px;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }
+                .card-header {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 2rem 1.5rem 1rem 1.5rem;
+                    border-bottom: 1px solid var(--color-card-border-inner);
+                    background: var(--color-bg-1);
+                    width: 100%;
+                }
+                .card-header h3 {
+                    margin: 0 0 0.5rem 0;
+                    font-size: 1.7rem;
+                    color: var(--color-primary);
+                    font-weight: 700;
+                    text-align: center;
+                }
+                .card-content {
+                    padding: 2rem 1.5rem;
+                    background: var(--color-surface);
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.15rem;
+                }
+                .application-item, .job-item, .interview-item, .notification-item {
+                    padding: 1rem;
+                    border-bottom: 1px solid #e5e7eb;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                .application-item:last-child, .job-item:last-child, .interview-item:last-child, .notification-item:last-child {
+                    border-bottom: none;
+                }
+                .application-status, .interview-status {
+                    padding: 0.25rem 0.75rem;
+                    border-radius: 20px;
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                }
+                .status-pending { background: #fef3c7; color: #92400e; }
+                .status-shortlisted { background: #dbeafe; color: #1e40af; }
+                .status-interview_scheduled { background: #e0e7ff; color: #3730a3; }
+                .status-selected { background: #d1fae5; color: #065f46; }
+                .status-rejected { background: #fee2e2; color: #991b1b; }
+                .status-scheduled { background: #e0e7ff; color: #3730a3; }
+                .empty-state { text-align: center; color: #6b7280; padding: 2rem; font-size: 1.1rem; }
+                .loading-placeholder { text-align: center; color: #6b7280; padding: 1rem; }
+                .error { color: #dc2626; text-align: center; padding: 1rem; }
+                .alert { padding: 1rem; border-radius: 8px; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; }
+                .alert--warning { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; }
+                .notification-item.unread { background: #f0f9ff; }
+                .notification-bell { position: relative; cursor: pointer; }
+                .notification-count { position: absolute; top: -5px; right: -5px; background: #dc2626; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; }
+                .job-ctc { font-weight: 600; color: #059669; }
+                .interview-details { display: flex; gap: 1rem; margin-top: 0.5rem; }
+                .interview-details span { font-size: 0.8rem; color: #6b7280; }
+                .btn--primary {
+                    background: #38bdf8;
+                    color: #fff;
+                    border: none;
+                    padding: 0.5rem 1.5rem;
+                    border-radius: 6px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: background 0.2s;
+                    box-shadow: 0 2px 8px rgba(56,189,248,0.08);
+                }
+                .btn--primary:hover {
+                    background: #2563eb;
+                }
+                .btn--link {
+                    background: none;
+                    color: #2563eb;
+                    border: none;
+                    font-weight: 600;
+                    cursor: pointer;
+                    text-decoration: underline;
+                    padding: 0;
+                }
+                /* Dashboard list rows (jobs, applications, interviews, announcements) */
+                .item-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 1rem;
+                    padding: 1rem 1.25rem;
+                    border-bottom: 1px solid #374151;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                }
+
+                .item-row:hover {
+                    background-color: #1f2937;
+                }
+
+                .item-row:last-child { 
+                    border-bottom: none; 
+                }
+
+                .item-meta {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    color: #e5e7eb;
+                }
+
+                .item-title {
+                    font-weight: 600;
+                    color: #fff;
+                }
+
+                .item-subtle {
+                    color: #9ca3af;
+                    font-size: 0.9rem;
+                }
+
+                .badge {
+                    display: inline-block;
+                    padding: 0.25rem 0.6rem;
+                    border-radius: 9999px;
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                    line-height: 1;
+                    white-space: nowrap;
+                }
+
+                /* Status badges (applications/interviews) */
+                .badge--pending { background: #4b5563; color: #f3f4f6; }
+                .badge--shortlisted { background: #1e40af; color: #e0e7ff; }
+                .badge--selected { background: #065f46; color: #d1fae5; }
+                .badge--rejected { background: #7f1d1d; color: #fee2e2; }
+                .badge--scheduled { background: #3730a3; color: #e0e7ff; }
+                .badge--completed { background: #14532d; color: #d1fae5; }
+                .badge--cancelled { background: #7f1d1d; color: #fee2e2; }
+                .badge--rescheduled { background: #4338ca; color: #e0e7ff; }
+
+                /* Text colors */
+                .text-green { color: #10b981; }
+                .text-blue { color: #60a5fa; }
+                .text-muted { color: #9ca3af; }
+
+                /* Notification styles */
+                .notification-item.unread {
+                    background-color: #1e293b;
+                    border-left: 4px solid #38bdf8;
+                }
+
+                /* Skills management (for profile page) */
+                .skill-tag {
+                    display: inline-block;
+                    background: #374151;
+                    color: #fff;
+                    padding: 0.25rem 0.75rem;
+                    border-radius: 20px;
+                    margin: 0.25rem;
+                    font-size: 0.8rem;
+                }
+
+                .skill-tag button {
+                    background: none;
+                    border: none;
+                    color: #ef4444;
+                    margin-left: 0.5rem;
+                    cursor: pointer;
+                    font-weight: bold;
+                }
+
+            </style>
         </div>
     </div>
-
-    <!-- Supabase Configuration -->
-    <script type="module" src="assets/js/supabase-config.js"></script>
-    <script src="assets/js/common.js"></script>
-    <script src="assets/js/student.js"></script>
-
-    <style>
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-card { display: flex; align-items: center; padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .stat-icon { font-size: 2rem; margin-right: 1rem; }
-        .stat-content h3 { margin: 0; font-size: 2rem; color: #2563eb; }
-        .stat-content p { margin: 0; color: #64748b; }
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; }
-        .dashboard-card { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .card-header { display: flex; justify-content: between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #e5e7eb; }
-        .card-content { padding: 1.5rem; }
-        .application-item, .job-item, .interview-item, .notification-item { padding: 1rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
-        .application-item:last-child, .job-item:last-child, .interview-item:last-child, .notification-item:last-child { border-bottom: none; }
-        .application-status, .interview-status { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
-        .status-pending { background: #fef3c7; color: #92400e; }
-        .status-shortlisted { background: #dbeafe; color: #1e40af; }
-        .status-interview_scheduled { background: #e0e7ff; color: #3730a3; }
-        .status-selected { background: #d1fae5; color: #065f46; }
-        .status-rejected { background: #fee2e2; color: #991b1b; }
-        .status-scheduled { background: #e0e7ff; color: #3730a3; }
-        .empty-state { text-align: center; color: #6b7280; padding: 2rem; }
-        .loading-placeholder { text-align: center; color: #6b7280; padding: 1rem; }
-        .error { color: #dc2626; text-align: center; padding: 1rem; }
-        .alert { padding: 1rem; border-radius: 8px; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; }
-        .alert--warning { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; }
-        .notification-item.unread { background: #f0f9ff; }
-        .notification-bell { position: relative; cursor: pointer; }
-        .notification-count { position: absolute; top: -5px; right: -5px; background: #dc2626; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; }
-        .job-ctc { font-weight: 600; color: #059669; }
-        .interview-details { display: flex; gap: 1rem; margin-top: 0.5rem; }
-        .interview-details span { font-size: 0.8rem; color: #6b7280; }
-    </style>
+</body>
+</html>

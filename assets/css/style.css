@@ -1,8 +1,6 @@
-
-
 /* --- Auth & Landing Page Styles (modern vibrant palette) --- */
 body {
-  background: linear-gradient(135deg, #232946 0%, #1ca7ec 100%);
+  background: #181a1b;
   color: #f4f4f4;
   font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
 }
@@ -873,15 +871,21 @@ select.form-control {
 
 /* Navigation Styles */
 .navbar {
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  padding: var(--space-12) 0;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  width: 100vw;
+  background-color: #232946;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 100;
 }
 
 .nav-container {
+  margin-top: 80px;
   max-width: var(--container-xl);
   margin: 0 auto;
   padding: 0 var(--space-16);
@@ -1445,6 +1449,33 @@ select.form-control {
   color: var(--color-text-secondary);
   font-size: var(--font-size-xs);
   margin-top: var(--space-4);
+}
+
+/* Centering dashboard elements */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.dashboard-card {
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.dashboard-card h3 {
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    color: #333;
 }
 
 /* Responsive Design */

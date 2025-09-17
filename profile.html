@@ -1,19 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - PlacementPro</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Profile - PlacementPro</title>
+  <link rel="stylesheet" href="assets/css/style.css"/>
 </head>
 <body>
-    <nav id="main-nav" class="navbar">
-        <!-- ...existing code from nav in index.html... -->
-    </nav>
-    <div id="profile-page" class="page">
-        <!-- ...profile page content from index.html... -->
+  <!-- Top Navigation (same look as dashboard) -->
+  <nav class="navbar">
+    <div class="nav-container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+      <div class="nav-left" style="display:flex; align-items:center; gap:1.5rem;">
+        <h2 style="margin:0;">PlacementPro</h2>
+        <a href="dashboard-student.html" class="nav-link">Dashboard</a>
+      </div>
+      <div class="nav-right" style="display:flex; align-items:center; gap:1.5rem;">
+        <a href="jobs.html" class="nav-link">Jobs</a>
+        <a href="profile.html" class="nav-link active">Profile</a>
+        <a href="interviews.html" class="nav-link">Interviews</a>
+      </div>
     </div>
-    <script src="assets/js/common.js"></script>
-    <script src="assets/js/student.js"></script>
+  </nav>
+
+  <div class="app-container">
+    <div class="dashboard">
+      <div class="main-content">
+        <div class="dashboard-container">
+
+          <!-- Edit Profile Card -->
+          <div class="dashboard-profile-card dashboard-card">
+            <div class="card-header">
+              <h3>Edit Student Profile</h3>
+            </div>
+
+            <div class="card-content">
+              <form id="student-profile-form" class="form-grid" autocomplete="off">
+                <div class="form-group">
+                  <label for="profile-name">Full Name</label>
+                  <input id="profile-name" type="text" placeholder="Full name"/>
+                </div>
+
+                <div class="form-group">
+                  <label for="profile-email">Email</label>
+                  <input id="profile-email" type="email" placeholder="Email" disabled/>
+                </div>
+
+                <div class="form-group">
+                  <label for="profile-phone">Phone</label>
+                  <input id="profile-phone" type="text" placeholder="+91-XXXXXXXXXX"/>
+                </div>
+
+                <div class="form-group">
+                  <label for="profile-branch">Branch</label>
+                  <input id="profile-branch" type="text" placeholder="Computer Science"/>
+                </div>
+
+                <div class="form-group">
+                  <label for="profile-year">Passing Year</label>
+                  <input id="profile-year" type="number" min="2000" max="2100" placeholder="2027"/>
+                </div>
+
+                <div class="form-group">
+                  <label for="profile-cgpa">CGPA</label>
+                  <input id="profile-cgpa" type="number" step="0.1" min="0" max="10" placeholder="8.0"/>
+                </div>
+
+                <div class="form-group" style="grid-column:1 / -1;">
+                  <label for="profile-skills">Skills (comma separated)</label>
+                  <input id="profile-skills" type="text" placeholder="Python, React, SQL"/>
+                </div>
+
+                <div class="form-group" style="grid-column:1 / -1;">
+                  <label for="profile-resume">Resume URL</label>
+                  <input id="profile-resume" type="url" placeholder="https://..."/>
+                </div>
+
+                <div class="form-actions">
+                  <button id="profile-save" class="btn btn--primary" type="submit">Save Changes</button>
+                  <button id="profile-cancel" class="btn btn--secondary" type="button">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Inline alert + toast (shared pattern) -->
+          <div id="profile-alert" class="alert alert--warning hidden"></div>
+          <div id="toast" class="toast hidden"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts (keep this order) -->
+  <script type="module" src="assets/js/supabase-config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/profile.js"></script>
+
+  <style>
+    /* Match dashboard look */
+    :root{
+      --color-primary:#38bdf8;
+      --color-bg-1:#232946;
+      --color-surface:#232946;
+      --color-card-border-inner:#374151;
+      --color-btn-primary-text:#fff;
+    }
+    body{
+      margin:0;
+      padding:0;
+      background:#181a1b;
+      color:#fff;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Noto Color Emoji",sans-serif;
+    }
+    .navbar{
+      position:fixed; top:0; left:0; width:100vw;
+      background-color:#232946; color:#fff;
+      display:flex; justify-content:space-between;
+      padding:1rem 2rem; box-shadow:0 4px 8px rgba(0,0,0,0.1); z-index:100;
+    }
+    .app-container{ margin-top:80px; display:flex; flex-direction:column; align-items:center; width:100vw; }
+    .dashboard-container{ max-width:1200px; margin:0 auto; display:flex; flex-direction:column; align-items:center; gap:20px; padding:0 16px; }
+
+    .dashboard-profile-card{
+      width:100%; background:#232946; color:#fff; padding:2rem; border-radius:8px;
+      box-shadow:0 4px 16px rgba(0,0,0,0.2); margin-bottom:2rem;
+    }
+    .dashboard-profile-card .card-header{
+      width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      padding:0; border-bottom:none; margin-bottom:0.5rem;
+    }
+    .dashboard-profile-card .card-header h3{
+      margin:0; font-size:1.7rem; color:var(--color-primary); font-weight:700; text-align:center;
+    }
+    .dashboard-profile-card .card-content{ margin-top:1rem; color:#fff; font-size:1rem; background:transparent; }
+
+    .form-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; }
+    .form-group{ display:flex; flex-direction:column; }
+    .form-group label{ margin-bottom:0.5rem; font-weight:600; color:#64748b; }
+    .form-group input{
+      padding:0.75rem; border:1px solid #374151; border-radius:6px; background:#1f2937; color:#fff; font-size:1rem;
+    }
+    .form-actions{ grid-column:1 / -1; display:flex; gap:1rem; justify-content:center; margin-top:0.5rem; }
+
+    .btn{ background:#374151; color:#fff; border:none; padding:0.5rem 1rem; border-radius:6px; font-weight:600; cursor:pointer; transition:background 0.2s; font-size:0.95rem; }
+    .btn:hover{ opacity:0.9; }
+    .btn--primary{ background:#38bdf8; }
+    .btn--primary:hover{ background:#2563eb; }
+    .btn--secondary{ background:#6b7280; }
+
+    .alert{ padding:1rem; border-radius:8px; margin-bottom:1rem; }
+    .alert--warning{ background:#fef3c7; border:1px solid #f59e0b; color:#92400e; }
+
+    .toast{
+      position:fixed; top:100px; right:20px; padding:1rem 1.5rem; border-radius:6px; color:#fff; font-weight:600; z-index:300; transition:opacity 0.3s ease;
+    }
+    .toast.hidden{ opacity:0; pointer-events:none; }
+    .toast.info{ background:#38bdf8; } .toast.success{ background:#10b981; } .toast.danger{ background:#ef4444; }
+
+    @media (max-width:768px){
+      .form-grid{ grid-template-columns:1fr; }
+      .navbar .nav-container{ flex-direction:column; gap:0.75rem; align-items:flex-start!important; }
+    }
+  </style>
 </body>
 </html>
