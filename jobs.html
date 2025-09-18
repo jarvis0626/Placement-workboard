@@ -18,6 +18,8 @@
         <a href="jobs.html" class="nav-link active">Jobs</a>
         <a href="profile.html" class="nav-link">Profile</a>
         <a href="interviews.html" class="nav-link">Interviews</a>
+        <button id="logout-btn" class="btn btn--secondary">Logout</button>
+
       </div>
     </div>
   </nav>
@@ -127,6 +129,24 @@
       .filters-container{ width:100%; flex-direction:column; align-items:stretch; }
       #jobs-list{ grid-template-columns:1fr; }
     }
+    /* Reusable interest button look */
+    .btn--interest {
+      background: #38bdf8;  /* sky-400/500 look */
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(56,189,248,0.15);
+      transition: background .15s ease-in-out, transform .05s ease-in-out;
+    }
+    .btn--interest:hover { background: #2563eb; } /* blue-600 hover */
+    .btn--interest:active { transform: translateY(1px); }
+    .btn--interest.applied,
+    .btn--interest[disabled] {
+      background: #6b7280; cursor: default; box-shadow: none;
+    }
+
   </style>
 </body>
 </html>

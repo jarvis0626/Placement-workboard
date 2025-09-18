@@ -1,4 +1,4 @@
-// company.js — classic script (no imports). Relies on window.supabase from supabase-config.js.
+// company.js
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Guard: supabase client present

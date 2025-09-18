@@ -25,6 +25,7 @@
                         <a href="jobs.html" class="nav-link">Jobs</a>
                         <a href="profile.html" class="nav-link">Profile</a>
                         <a href="interviews.html" class="nav-link">Interviews</a>
+                        <button id="logout-btn" class="btn btn--secondary">Logout</button>
                     </div>
                 </div>
             </nav>
@@ -107,6 +108,7 @@
                     </div>
                 </div>
             </div>
+            <div id="toast" class="toast hidden"></div>
 
             <!-- Supabase Configuration -->
             <script type="module" src="assets/js/supabase-config.js"></script>
@@ -412,8 +414,29 @@
                     font-weight: bold;
                 }
 
+                /* Accent button used for “I’m interested” */
+                .btn--interest {
+                background: #38bdf8;
+                color: #fff;
+                border: none;
+                padding: 0.5rem 1rem;
+                border-radius: 12px;
+                font-weight: 700;
+                box-shadow: 0 2px 8px rgba(56,189,248,0.15);
+                transition: background .15s ease-in-out, transform .05s ease-in-out;
+                }
+                .btn--interest:hover { background: #2563eb; }
+                .btn--interest:active { transform: translateY(1px); }
+
+                /* If any page-level selector overrides buttons, force the accent on dashboard */
+                .card-content .btn--interest {
+                background: #38bdf8 !important;
+                color: #fff !important;
+                }
+
+
             </style>
         </div>
-    </div>
+    </div>      
 </body>
 </html>

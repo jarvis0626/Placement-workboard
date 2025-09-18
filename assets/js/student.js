@@ -163,45 +163,39 @@ async function loadStudentStats() {
 }
 
 // Recent job postings (eligible by cgpa/branch, upcoming deadlines)
+// Recent job postings - show latest 3 only
+// Recent job postings - show latest 3 only (clickable)
 async function loadLatestJobs() {
     if (!studentData) return;
     
     try {
-        const branch = studentData.branch;
-        const cgpa = studentData.cgpa || 0;
-
-        // Get recent jobs
+        // Get latest 3 jobs (no filters)
         const { data: jobs, error } = await supabase
             .from('jobs')
-            .select(`
-                id, title, location, ctc, deadline,
-                companies(name)
-            `)
-            .lte('min_cgpa', cgpa)
+            .select('id, title, location, ctc, deadline, companies(name)')
             .order('created_at', { ascending: false })
-            .limit(5);
-
+            .limit(3);
+        
         if (error) {
             console.error('Error loading jobs:', error);
             return;
         }
-
+        
         const list = document.getElementById('recent-jobs-list');
         if (!jobs || jobs.length === 0) {
             if (list) list.innerHTML = '<div class="job-item empty-state">No recent jobs found.</div>';
             return;
         }
-
+        
         const rows = jobs.map(j => {
             const title = j.title || 'Job';
             const company = j.companies?.name ? ` • ${j.companies.name}` : '';
             const location = j.location ? ` · ${j.location}` : '';
             const ctc = j.ctc ? `<span class="text-green">${j.ctc}</span>` : '';
-            const deadline = j.deadline ? 
-                `<span class="item-subtle">Due ${new Date(j.deadline).toLocaleDateString()}</span>` : '';
+            const deadline = j.deadline ? `<span class="item-subtle">Due ${new Date(j.deadline).toLocaleDateString()}</span>` : '';
             
             return `
-                <div class="item-row job-item">
+                <div class="item-row job-item" onclick="location.href='jobs.html'" style="cursor: pointer;">
                     <div class="item-meta">
                         <span class="item-title">${title}${company}${location}</span>
                     </div>
@@ -209,15 +203,18 @@ async function loadLatestJobs() {
                         ${ctc}
                         ${deadline}
                     </div>
-                </div>`;
+                </div>
+            `;
         }).join('');
-
+        
         setHTML('recent-jobs-list', rows);
         
     } catch (error) {
         console.error('Error in loadLatestJobs:', error);
     }
 }
+
+
 
 // Applications list (latest 5) with status badges
 async function loadRecentApplications() {
@@ -661,26 +658,6 @@ function getNotificationIcon(type) {
     };
     return icons[type] || '📢';
 }
-
-function showSuccess(message) {
-    // Simple alert - you can implement toast notifications here
-    alert('✅ ' + message);
-}
-
-function showError(message) {
-    // Simple alert - you can implement toast notifications here
-    alert('❌ ' + message);
-}
-
-function showProfileError(msg) {
-    const alert = document.getElementById('profile-alert');
-    if (alert) {
-        alert.textContent = msg;
-        alert.classList.remove('hidden');
-        alert.classList.add('error');
-    }
-}
-
 // Ensure profile exists and insert a student record if the role is student
 async function ensureProfileExists(userId, branch, passing_year, cgpa) {
     const { data: { user } } = await supabase.auth.getUser();
